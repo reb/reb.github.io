@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-slide-content { background-size: 8em; }
+      .remark-slide-content { font-size: 32px; }
+      .remark-slide-content ul { list-style-type: square; }
+      .remark-slide-content li { padding-bottom: 1em; }
+      .remark-slide-number { display: none; }
+      .remark-code, .remark-inline-code { font-size: inherit 36px; font-family: 'Ubuntu Mono'; }
+      .remark-code-span-highlighted { color: red; } 
+      
+      .left-column { width: 50%; float: left }
+      .right-column { width: 50%; float: right }
+
+      .console { background-color: black; color: white; padding: 0.5em; }
+      .bluepill img { width: 60%; }
+      .arrow img { width: 10%; padding-bottom: 9%; }
+      .logo img { width: 26%; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+name: title-slide
+
+class: center, middle
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg)
+background-position: 5% 95%
+
+# The reason Rust is the best language ever
+by reb
+
+---
+
+class: center, middle
+# About me
+
+---
+
+template: title-slide
+
+---
+
+# Jargon 
+
+.left-column[
+# Java
+
+developer
+
+port code
+
+java-like
+]
+.right-column[
+# Rust
+
+Rustacean
+
+Oxidizing
+
+Rustic
+]
+
+---
+
+class: center, middle
+# Ferris
+![](https://rustbridge.github.io/a-very-brief-intro-to-rust/img/ferris.gif)
+
+???
+ferris: ablative plural of ferrum
+
+---
+
+class: center, middle
+# Questions?
+
+---
+
+class: center, middle
+# No questions!
+
+---
+
+class: center, middle
+# Thanks for coming
+please rate my talk
+
+---
+
+template: title-slide
+
+---
+
+# Modern language
+
+- Young
+- Made for hard problems
+- Multi-platform
+- Quick development
+
+???
+Young; Java 1995, C++ 1985, C 1972, Python 1990, Ruby 1995, Haskell 1990, Scala 2004, Rust 2010, Kotlin 2011
+
+Hard problems; able to do anything you want, direct memory pointers without the risk of segfaults, blazingly fast
+
+Platforms; compiles to binaries, for anything
+
+Quick development; 6 week development cycles
+
+---
+
+# Install rust
+
+Go to rust-lang.org and click Install
+
+---
+
+template: title-slide
+
+---
+
+# `rustup` & `cargo`
+
+- Automatically managed toolchain
+- Easy package inclusion
+- New project creation
+
+---
+
+# Create a project
+
+```shell
+cargo new helloworld
+```
+
+Check out the project folder
+
+---
+
+# Run your project
+
+in `src/`
+
+```shell
+rustc main.rs
+
+main.exe  # Windows
+./main  # Linux/MacOS
+```
+
+Or
+
+```shell
+cargo run
+```
+
+---
+
+# Assignment
+
+Add a `load_file` function that returns a boolean
+
+Hint: `()` is the unit/void representation
+
+---
+
+# The Rust compiler
+
+Who gets this warning?
+.console[```
+warning: function is never used: \`load_file`
+ --> src\main.rs:4:1
+  |
+4 | fn load_file() -> bool {
+  | ^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = `note: #[warn(dead_code)] on by default`
+```]
+
+---
+
+# The Rust compiler
+
+- Warns
+- Suggests
+- Explains
+- Teaches
+- Challenges
+
+---
+
+# Variables - immutable
+
+```rust
+let m = 1;
+m = 2;
+```
+
+.console[```
+error[E0384]: cannot assign twice to immutable variable \`m`
+ --> src\main.rs:3:5
+  |
+2 |     let m = 1;
+  |         - first assignment to \`m`
+3 |     m = 2;
+  |     `^^^^^ cannot assign twice to immutable variable`
+```]
+
+---
+
+# Variables - type inference
+
+```rust
+let mut m = 1;
+m = true;
+```
+
+.console[```
+error[E0308]: mismatched types
+ --> src\main.rs:3:9
+  |
+3 |     m = true;
+  |         `^^^^ expected integral variable, found bool`
+  |
+  = note: expected type \`{integer}`
+             found type \`bool`
+```]
+
+---
+
+# Automatic return
+
+```rust
+fn load_file() -> bool {
+    true;
+}
+```
+
+.console[```
+error[E0308]: mismatched types
+ --> src\main.rs:6:24
+  |
+6 |   fn load_file() -> bool {
+  |  ________________________^
+7 | |     true;
+  | |         `- help: consider removing this semicolon`
+8 | | }
+  | |_^ expected bool, found ()
+  |
+  = note: expected type \`bool`
+             found type \`()`
+```]
+
+---
+
+# `Struct` & `Trait`
+
+- Not objects
+- Composition instead of inheritance
+
+---
+
+# `Struct` & `Trait`
+
+.left-column[
+## Composition
+```rust
+trait Surface {
+    fn area(&self) -> f64;
+}
+
+struct Circle {
+    radius: f64,
+}
+
+impl Surface for Circle {
+  fn area(&self) -> f64 {
+    // stuff
+  }
+}
+
+```
+]
+
+.right-column[
+## Inheritance
+```java
+abstract class Shape {
+  float area();
+}
+
+class Circle extends Shape {
+  float radius;
+  
+  float area() {
+    // stuff
+  }
+}
+
+```
+]
+
+---
+
+# `Option`
+
+- Forces handling potential empty returns
+- `Option<Type>` can be `Type` or `None`
+- `expect("error message if empty")`
+- `unwrap()`
+
+---
+
+# `Result`
+
+- Forces handling potential exceptions
+- `Result<Type, Error>` can be `Type` or `Error`
+- `expect("error message if error")`
+- `ok()`
+
+---
+
+# Closures
+
+```rust
+let plus_one = |x: i32| x + 1;
+
+let plus_two = |x| {
+    let mut result: i32 = x;
+
+    result += 1;
+    result += 1;
+
+    result
+}; 
+```
+
+---
+
+# Parallel processing
+
+.left-column[
+## Sequential
+```rust
+
+
+ fn sum_of_squares(input: &[i32])
+                         -> i32 {
+   input.iter()
+        .map(|&i| i * i)
+        .sum()
+ }
+```
+]
+
+.right-column[
+## Parallel
+```rust
+ `use rayon::prelude::*;`
+
+ fn sum_of_squares(input: &[i32])
+                         -> i32 {
+   input.`par_`iter()
+        .map(|&i| i * i)
+        .sum()
+ }
+```
+]
+
+---
+
+# Sanity check
+
+.logo[![](https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg)]
+.arrow[![](https://www.svgrepo.com/show/57141/right-arrow.svg)]
+.bluepill[![](http://wiki.stm32duino.com/images/thumb/1/19/STM32_Blue_Pill_top.jpg/1400px-STM32_Blue_Pill_top.jpg)]
+
+.logo[![](https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg)]
+.arrow[![](https://www.svgrepo.com/show/57141/right-arrow.svg)]
+.logo[![](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Web_Assembly_Logo.svg/612px-Web_Assembly_Logo.svg.png)]
+
+---
+
+# Tricky bits
+
+- Ownership
+- Lifetime
+
+---
+
+# Mind-altering bits
+
+- Ownership
+- Lifetime
+
+---
+
+# Fruit vote counter
+
+Combine and sort favourite fruit votes from an input file like:
+
+```
+banana, 10
+apple, 5
+kiwi, 1
+banana, 3
+```
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create({
+	highlightSpans: true
+      });
+    </script>
+  </body>
+</html>
