@@ -329,6 +329,24 @@ match optional_item {
 
 ---
 
+# `Result` & `match`
+
+```rust
+fn function_with_potential_error() -> Result<i32, String> {
+    Err("Function not implemented")
+}
+
+let i = match function_with_potential_error() {
+    Ok(number) => number,
+    Err(message) => {
+        println!("Failed because: {}, using 0", message);
+        0
+    }
+};
+```
+
+---
+
 # Closures
 
 ```rust
