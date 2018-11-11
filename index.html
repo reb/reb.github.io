@@ -276,52 +276,6 @@ error[E0308]: mismatched types
 
 ---
 
-# `Struct` & `Trait`
-
-- Not objects
-- Composition instead of inheritance
-
----
-
-# `Struct` & `Trait`
-
-.left-column[
-## Composition
-```rust
-trait Surface {
-    fn area(&self) -> f64;
-}
-
-struct Circle {
-    radius: f64,
-}
-
-impl Surface for Circle {
-  fn area(&self) -> f64 {
-    // stuff
-  }
-}
-
-```
-]
-
-.right-column[
-## Inheritance
-```java
-abstract class Shape {
-  float area();
-}
-
-class Circle extends Shape {
-  float radius;
-  
-  float area() {
-    // stuff
-  }
-}
-
-```
-]
 
 ---
 
@@ -401,6 +355,55 @@ let plus_two = |x| {
 .logo[![](https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg)]
 .arrow[![](https://www.svgrepo.com/show/57141/right-arrow.svg)]
 .logo[![](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Web_Assembly_Logo.svg/612px-Web_Assembly_Logo.svg.png)]
+
+---
+
+# `Struct` & `Trait`
+
+- Not objects
+- Composition instead of inheritance
+
+---
+
+# `Struct` & `Trait`
+
+.left-column[
+## Composition
+```rust
+trait Surface {
+    fn area(&self) -> f64;
+}
+
+struct Circle {
+    radius: f64,
+}
+
+impl Surface for Circle {
+  fn area(&self) -> f64 {
+    // stuff
+  }
+}
+
+```
+]
+
+.right-column[
+## Inheritance
+```java
+abstract class Shape {
+  float area();
+}
+
+class Circle extends Shape {
+  float radius;
+  
+  float area() {
+    // stuff
+  }
+}
+
+```
+]
 
 ---
 
