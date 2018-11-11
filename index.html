@@ -277,6 +277,24 @@ error[E0308]: mismatched types
 
 ---
 
+# Assignment
+
+Change the `load_file` function.
+
+Let it return a string
+
+---
+
+# `String` & `&str`
+
+.console[```
+  = note: expected type \`std::string::String`
+             found type \`&'static str`
+```]
+
+2 options
+- Keep `&str` and only read
+- Convert with `.to_string()`
 
 ---
 
