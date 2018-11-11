@@ -307,6 +307,19 @@ Let it return a string
 
 ---
 
+# `Option` & `match`
+
+```rust
+let optional_item = Some(1); // type: Option<i32>
+
+match optional_item {
+    Some(item) => process(item),
+    None => fallback()
+}
+```
+
+---
+
 # `Result`
 
 - Forces handling potential exceptions
