@@ -21,13 +21,17 @@
       .remark-code, .remark-inline-code { font-size: inherit 36px; font-family: 'Ubuntu Mono'; }
       .remark-code-span-highlighted { color: red; } 
       
-      .left-column { width: 50%; float: left }
-      .right-column { width: 50%; float: right }
+      .cols { display: flex; }
+
+      .fifty { flex: 50%; }
+      .twenty { flex: 20%; }
 
       .console { background-color: black; color: white; padding: 0.5em; }
+      .console .remark-code-span-highlighted { background-color: white; }
       .bluepill img { width: 60%; }
       .arrow img { width: 10%; padding-bottom: 9%; }
       .logo img { width: 26%; }
+      .full img { width: 100%; }
     </style>
   </head>
   <body>
@@ -45,10 +49,54 @@ by reb
 ---
 
 class: center, middle
-background-image: url(openvalue-desktop-background.png)
-background-position: 50% 75%
 
 # About me
+
+---
+
+class: center, middle
+
+# About Rust
+
+.logo[![stackoverflow](logo-stackoverflow.svg)]
+
+.cols[
+
+.twenty[
+2016
+.full[![2016](survey-2016.png)]
+]
+
+.twenty[
+2017
+.full[![2017](survey-2017.png)]
+]
+
+.twenty[
+2018
+.full[![2018](survey-2018.png)]
+]
+
+.twenty[
+2019
+.full[![2019](survey-2019.png)]
+]
+
+.twenty[
+2020
+.full[![2020](survey-2020.png)]
+]
+]
+
+???
+Loved means % of developers that work with and want to continue working with a technology.
+
+---
+
+# Wikipedia agrees
+.full[![Rust wikipedia](wikipedia-rust.png)]
+
+
 
 ---
 
@@ -58,7 +106,8 @@ template: title-slide
 
 # Jargon 
 
-.left-column[
+.cols[
+.fifty[
 # Java
 
 developer
@@ -67,7 +116,7 @@ port code
 
 java-like
 ]
-.right-column[
+.fifty[
 # Rust
 
 Rustacean
@@ -75,6 +124,7 @@ Rustacean
 Oxidizing
 
 Rustic
+]
 ]
 
 ---
@@ -110,20 +160,20 @@ template: title-slide
 
 # Modern language
 
-- Young
 - Made for hard problems
+- Young
 - Multi-platform
 - Quick development
 
 ???
-Young; Java 1995, C++ 1985, C 1972, Python 1990, Ruby 1995, Haskell 1990, Scala 2004, Rust 2010, Kotlin 2011
-
 Hard problems; able to do anything you want, direct memory pointers without the risk of segfaults, blazingly fast
 Moore is over! speed will start mattering again (https://spectrum.ieee.org/view-from-the-valley/computing/hardware/david-patterson-says-its-time-for-new-computer-architectures-and-software-languages)
 
-Platforms; compiles to binaries, for anything
+Young; Java 1995, C++ 1985, C 1972, Python 1990, Ruby 1995, Haskell 1990, Scala 2004, Rust 2010, Kotlin 2011
 
-Quick development; 6 week development cycles
+Platforms; compiles to binaries, for anything, thanks to LLVM
+
+Quick development; 6 week development cycles, often things in beta will be stable the next time you touch your side project
 
 ---
 
@@ -183,6 +233,9 @@ Add a `load_file` function that returns a boolean
 
 Hint: `()` is the unit/void representation
 
+???
+Use Google
+
 ---
 
 # The Rust compiler
@@ -210,9 +263,13 @@ warning: function is never used: \`load_file`
 
 ???
 W - You've created a function that's not used
+
 S - This variable was not found, but something that looks like it was, did you mean that?
+
 E - What are you trying to do that's not allowed
+
 T - Instead of saying wrong! it's messages are more helpful
+
 C - If the compiler fights you, you have to think better about what you're doing
 
 ---
@@ -268,16 +325,70 @@ fn load_file() -> bool {
 error[E0308]: mismatched types
  --> src\main.rs:6:24
   |
-6 |   fn load_file() -> bool {
+  |   fn load_file() -> bool {
   |  ________________________^
-7 | |     true;
+  | |     true;
   | |         `- help: consider removing this semicolon`
-8 | | }
+  | | }
   | |_^ expected bool, found ()
   |
   = note: expected type \`bool`
              found type \`()`
 ```]
+
+---
+# `enum`
+
+```rust
+enum TaxBracket {
+    low,
+}
+```
+
+.console[```
+warning: variant `low` should have an upper camel case name
+  --> src\main.rs:29:5
+   |
+   |     low,
+   |     ^^^ help: convert the identifier to upper camel case: `Low`
+```]
+
+---
+
+
+# `match`
+
+```rust
+fn tax_bracket(income: u32) -> TaxBracket {
+    let bracket = match income {
+        0 | 1 => TaxBracket::Exempt,
+        2..=10 => TaxBracket::Low,
+    };
+    return bracket;
+}
+```
+
+.console[```
+error[E0004]: non-exhaustive patterns: `11u32..=u32::MAX` not covered
+  --> src\main.rs:32:25
+   |
+   |     let bracket = match income {
+   |                         ^^^^^^ pattern `11u32..=u32::MAX` not covered
+```]
+
+---
+
+# `match` - working
+```rust
+fn tax_bracket(income: u32) -> TaxBracket {
+    let bracket = match income {
+        0 | 1 => TaxBracket::Exempt,
+        2..=10 => TaxBracket::Low,
+        `_ => TaxBracket::High,`
+    };
+    return bracket;
+}
+```
 
 ---
 
@@ -289,7 +400,7 @@ Let it return a string
 
 ---
 
-# `String` & `&str`
+# `&str` & `String`
 
 .console[```
   = note: expected type \`std::string::String`
@@ -297,16 +408,67 @@ Let it return a string
 ```]
 
 2 options
-- Keep `&str` and only read
+- Keep `&str` and handle lifetime
 - Convert with `.to_string()`
+
+---
+
+# `Struct` & `Trait`
+
+- Not objects
+- Composition instead of inheritance
+
+---
+
+# `Struct` & `Trait`
+
+.cols[
+.fifty[
+## Composition
+```rust
+trait Surface {
+    fn area(&self) -> f64;
+}
+
+struct Circle {
+    radius: f64,
+}
+
+impl Surface for Circle {
+  fn area(&self) -> f64 {
+    // stuff
+  }
+}
+
+```
+]
+
+.fifty[
+## Inheritance
+```java
+abstract class Shape {
+  float area();
+}
+
+class Circle extends Shape {
+  float radius;
+  
+  float area() {
+    // stuff
+  }
+}
+
+```
+]
+]
 
 ---
 
 # `Option`
 
 - Forces handling potential empty returns
-- `Option<Type>` can be `Type` or `None`
-- `expect("error message if empty")`
+- `Option<Type>` can be `Some(Type)` or `None`
+- `expect("error message when None")`
 - `unwrap()`
 
 ---
@@ -327,16 +489,16 @@ match optional_item {
 # `Result`
 
 - Forces handling potential exceptions
-- `Result<Type, Error>` can be `Type` or `Error`
+- `Result<Type, Error>` can be `Ok(Type)` or `Err(Error)`
 - `expect("error message if error")`
-- `ok()`
+- convert to `Option` with `ok()`
 
 ---
 
 # `Result` & `match`
 
 ```rust
-fn function_with_potential_error() -> Result<i32, String> {
+fn function_with_potential_error() -> Result<i32, &str> {
     Err("Function not implemented")
 }
 
@@ -348,6 +510,43 @@ let i = match function_with_potential_error() {
     }
 };
 ```
+
+---
+
+# Assignment
+
+Make a function that converts a string `"banana, 21"` to a `Fruit` struct.
+
+```rust
+// derive auto-implements simple features
+#[derive(Debug, PartialEq, Eq)] 
+struct Fruit {
+    name: String,
+    amount: u32,
+}
+
+fn convert_to_fruit(line: &str) -> Result<Fruit, &str> {
+    Err("Function not implemented")
+}
+```
+---
+
+# Run a test
+
+- `cargo test`
+```rust
+#[test]
+fn test_convert_to_fruit() {
+    let fruit = convert_to_fruit("banana, 21");
+
+    let name = "banana".to_string();
+    let amount = 21;
+    let expected = Ok(Fruit { name, amount });
+    assert_eq!(fruit, expected);
+}
+```
+slides are on [reb.github.io]()
+
 
 ---
 
@@ -366,27 +565,37 @@ let plus_two = |x| {
 
 ---
 
-# List iterating
+# Iteration
 
 ```rust
- fn sum_of_squares(input: &[i32])
-                         -> i32 {
+ fn sum_of_squares(input: &Vec<i32>) -> i32 {
    input.iter()
         .map(|&i| i * i)
         .sum()
  }
 ```
 
+```rust
+fn sum_of_squares(input: &Vec<i32>) -> i32 {
+    let mut sum = 0;
+    for i in input.iter() {
+        sum += i * i;
+    }
+    sum
+}
+```
+
 ---
 
 # Parallel processing
 
-.left-column[
+.cols[
+.fifty[
 ## Sequential
 ```rust
 
 
- fn sum_of_squares(input: &[i32])
+ fn sum_of_squares(input: &Vec<i32>)
                          -> i32 {
    input.iter()
         .map(|&i| i * i)
@@ -395,18 +604,19 @@ let plus_two = |x| {
 ```
 ]
 
-.right-column[
+.fifty[
 ## Parallel
 ```rust
  `use rayon::prelude::*;`
 
- fn sum_of_squares(input: &[i32])
+ fn sum_of_squares(input: &Vec<i32>)
                          -> i32 {
    input.`par_`iter()
         .map(|&i| i * i)
         .sum()
  }
 ```
+]
 ]
 
 ---
@@ -415,82 +625,44 @@ let plus_two = |x| {
 
 .logo[![](https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg)]
 .arrow[![](https://www.svgrepo.com/show/57141/right-arrow.svg)]
-.bluepill[![](http://wiki.stm32duino.com/images/thumb/1/19/STM32_Blue_Pill_top.jpg/1400px-STM32_Blue_Pill_top.jpg)]
+.bluepill[![](blue-pill.jpg)]
 
 .logo[![](https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg)]
 .arrow[![](https://www.svgrepo.com/show/57141/right-arrow.svg)]
-.logo[![](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Web_Assembly_Logo.svg/612px-Web_Assembly_Logo.svg.png)]
+.logo[![](1200px-WebAssembly_Logo.svg.png)]
 
 ---
 
-# `Struct` & `Trait`
+# Ownership
 
-- Not objects
-- Composition instead of inheritance
-
----
-
-# `Struct` & `Trait`
-
-.left-column[
-## Composition
+- Passing variables gives ownership
+- `&` passes borrowed (read-only)
 ```rust
-trait Surface {
-    fn area(&self) -> f64;
-}
-
-struct Circle {
-    radius: f64,
-}
-
-impl Surface for Circle {
-  fn area(&self) -> f64 {
-    // stuff
-  }
-}
-
+HashMap.get(`&`key)
 ```
-]
 
-.right-column[
-## Inheritance
-```java
-abstract class Shape {
-  float area();
-}
 
-class Circle extends Shape {
-  float radius;
-  
-  float area() {
-    // stuff
-  }
-}
-
-```
-]
 
 ---
 
-# Tricky bits
+# Lifetime
 
-- Ownership
-- Lifetime
+- Indicate how long variables exist
 
----
-
-# Mind-altering bits
-
-- Ownership
-- Lifetime
-
+```rust
+fn tokenize<`'a`>(code: &`'a` str) -> impl Iterator<Item=&`'a` str> {
+    ...
+}
+```
+[source](https://www.brandonsmith.ninja/blog/favorite-rust-function)
 ---
 
 # Fruit vote counter
 
 Combine and sort favourite fruit votes from an input file like:
 
-.left-column[
+.cols[
+.fifty[
 Input
 ```
 apple, 5
@@ -500,13 +672,14 @@ banana, 3
 ```
 ]
 
-.right-column[
+.fifty[
 Output
 ```
 banana, 13
 apple, 5
 kiwi, 1
 ```
+]
 ]
 
 ---
@@ -517,7 +690,7 @@ class: center, middle
 
 Feel free to rate or give feedback!
 
-reb@openvalue.nl
+reboumans@gmail.com
 
 
     </textarea>
