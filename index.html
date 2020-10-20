@@ -249,6 +249,8 @@ template: title-slide
 - New project creation
 - `rustup docs`
 
+slides are on [reb.github.io]()
+
 ???
 Besides a compiler what did you get by installing?
 
@@ -588,19 +590,24 @@ fn convert_to_fruit(line: &str) -> Result<Fruit, &str> {
 
 # Run a test
 
-- `cargo test`
+```shell
+> cargo test
+```
+
 ```rust
 #[test]
 fn test_convert_to_fruit() {
     let fruit = convert_to_fruit("banana, 21");
-
     let name = "banana".to_string();
     let amount = 21;
     let expected = Ok(Fruit { name, amount });
     assert_eq!(fruit, expected);
 }
 ```
-slides are on [reb.github.io]()
+
+```shell
+> git clone https://github.com/reb/i-love-rust.git
+```
 
 
 ---
