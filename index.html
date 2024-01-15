@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Title</title>
+    <title>Rust workshop</title>
     <meta charset="utf-8">
     <style>
       @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
@@ -191,7 +191,7 @@ template: title-slide
 Hard problems; able to do anything you want, direct memory pointers without the risk of segfaults, blazingly fast
 Moore is over! speed will start mattering again (https://spectrum.ieee.org/view-from-the-valley/computing/hardware/david-patterson-says-its-time-for-new-computer-architectures-and-software-languages)
 
-Young; Java 1995, C++ 1985, C 1972, Python 1990, Ruby 1995, Haskell 1990, Scala 2004, Rust 2010, Kotlin 2011
+Young; Pascal 1970, C 1972, C++ 1985, Python 1990, Haskell 1990, Java 1995, Ruby 1995, Delphi 1995, Scala 2004, Rust 2010, Kotlin 2011
 
 Platforms; compiles to binaries, for anything, thanks to LLVM
 
@@ -201,7 +201,7 @@ Quick development; 6 week development cycles, often things in beta will be stabl
 
 # Install rust
 
-Go to [rust-lang.org](https://rust-lang.org) and click Install
+Go to [rust-lang.org](https://rust-lang.org) and click Get Started
 
 ---
 
@@ -231,6 +231,12 @@ Besides a compiler what did you get by installing?
 
 Check out the project folder
 
+???
+Created a binary application, cargo has options
+.git folder & .gitignore
+Cargo.toml
+src/main.rs will be lib.rs if library
+
 ---
 
 # Run your project
@@ -238,7 +244,7 @@ Check out the project folder
 in `src/`
 
 ```shell
-> rustc main.rs
+> rustc main.rs // compile
 > main.exe  // Windows
 > ./main  // Linux/MacOS
 ```
@@ -266,13 +272,13 @@ Use Google
 
 Who gets this warning?
 .console[```
-warning: function is never used: \`load_file`
- --> src\main.rs:4:1
+warning: function \`load_file` is never used
+ --> src\main.rs:5:4
   |
-4 | fn load_file() -> bool {
-  | ^^^^^^^^^^^^^^^^^^^^^^
+5 | fn load_file() -> bool {
+  |    ^^^^^^^^^
   |
-  = `note: #[warn(dead_code)] on by default`
+  `= note: #[warn(dead_code)] on by default`
 ```]
 
 ---
@@ -310,7 +316,10 @@ error[E0384]: cannot assign twice to immutable variable \`m`
  --> src\main.rs:3:5
   |
 2 |     let m = 1;
-  |         - first assignment to \`m`
+  |         -
+  |         |
+  |         first assignment to \`m`
+  |         help: consider making this binding mutable: \`mut m`
 3 |     m = 2;
   |     `^^^^^ cannot assign twice to immutable variable`
 ```]
@@ -328,11 +337,10 @@ m = true;
 error[E0308]: mismatched types
  --> src\main.rs:3:9
   |
+2 |     let mut m = 1;
+  |                 - expected due to this value
 3 |     m = true;
-  |         `^^^^ expected integral variable, found bool`
-  |
-  = note: expected type \`{integer}`
-             found type \`bool`
+  |         `^^^^ expected integer, found bool`
 ```]
 
 ---
@@ -347,17 +355,14 @@ fn load_file() -> bool {
 
 .console[```
 error[E0308]: mismatched types
- --> src\main.rs:6:24
+ --> src\main.rs:4:19
   |
-  |   fn load_file() -> bool {
-  |  ________________________^
-  | |     true;
-  | |         `- help: consider removing this semicolon`
-  | | }
-  | |_^ expected bool, found ()
-  |
-  = note: expected type \`bool`
-             found type \`()`
+4 | fn load_file() -> bool {
+  |    ---------      `^^^^ expected bool, found ()`
+  |    |
+  |    implicitly returns \`()` as its body has no tail or \`return` expression
+5 |     true;
+  |         - help: remove this semicolon to return this value
 ```]
 
 ---
@@ -370,11 +375,13 @@ enum TaxBracket {
 ```
 
 .console[```
-warning: variant `low` should have an upper camel case name
-  --> src\main.rs:29:5
-   |
-   |     low,
-   |     ^^^ help: convert the identifier to upper camel case: `Low`
+warning: variant \`low` should have an upper camel case name
+ --> src\main.rs:5:5
+  |
+5 |     low,
+  |     ^^^ help: convert the identifier to upper camel case: \`Low`
+  |
+  `= note: #[warn(non_camel_case_types)] on by default`
 ```]
 
 ---
@@ -384,20 +391,25 @@ warning: variant `low` should have an upper camel case name
 
 ```rust
 fn tax_bracket(income: u32) -> TaxBracket {
-    let bracket = match income {
+    match income {
         0 | 1 => TaxBracket::Exempt,
         2..=10 => TaxBracket::Low,
-    };
-    return bracket;
+    }
 }
 ```
 
 .console[```
-error[E0004]: non-exhaustive patterns: `11u32..=u32::MAX` not covered
-  --> src\main.rs:32:25
+error[E0004]: non-exhaustive patterns: \`11_u32..=u32::MAX` not covered
+  --> src\main.rs:10:11
    |
-   |     let bracket = match income {
-   |                         ^^^^^^ pattern `11u32..=u32::MAX` not covered
+10 |     match income {
+   |           `^^^^^^ pattern 11_u32..=u32::MAX not covered`
+   |
+   = note: the matched value is of type \`u32`
+help: ensure that all possible cases are being handled by adding a match arm with a wildcard pattern or an explicit pattern as shown
+   |
+12 ~         2..=10 => TaxBracket::Low,
+13 ~         11_u32..=u32::MAX => todo!(),
 ```]
 
 ---
@@ -405,12 +417,11 @@ error[E0004]: non-exhaustive patterns: `11u32..=u32::MAX` not covered
 # `match` - working
 ```rust
 fn tax_bracket(income: u32) -> TaxBracket {
-    let bracket = match income {
+    match income {
         0 | 1 => TaxBracket::Exempt,
         2..=10 => TaxBracket::Low,
         `_ => TaxBracket::High,`
-    };
-    return bracket;
+    }
 }
 ```
 
@@ -433,7 +444,7 @@ Let it return a string
 
 2 options
 - Keep `&str` and handle lifetime
-- Convert with `.to_string()`
+- Convert with `.to_owned()`
 
 ---
 
@@ -490,14 +501,20 @@ class Circle extends Shape {
 
 # `Option`
 
-- Forces handling potential empty returns
+- For when a function might return a value
 - `Option<Type>` can be `Some(Type)` or `None`
-- `expect("error message when None")`
-- `unwrap()`
 
 ---
 
-# `Option` & `match`
+# Handling `Option`
+
+- `unwrap()`
+- `expect("error message when None")`
+- `unwrap_or(value_when_none)`
+
+---
+
+# Handling `Option` with `match`
 
 ```rust
 let optional_item = Some(1); // type: Option<i32>
@@ -510,16 +527,55 @@ match optional_item {
 
 ---
 
+# Handling `Option` with `if let`
+
+```rust
+let optional_item = Some(1); // type: Option<i32>
+
+if let Some(item) = optional_item {
+    process(item);
+}
+```
+
+---
+
+# Handling `Option` with `if let`
+
+```rust
+fn multiply_first_two(vec: Vec<i32>) -> Option<i32> {
+    if let Some(first_number) = vec.get(0) {
+        if let Some(second_number) = vec.get(1) {
+            return Some(first_number * second_number);
+        }
+    }
+    return None;
+}
+```
+
+---
+
+# Handling `Option` with `?`
+
+```rust
+fn multiply_first_two(vec: Vec<i32>) -> Option<i32> {
+    let first_number = vec.get(0)?;
+    let second_number = vec.get(1)?;
+    return Some(first_number * second_number);
+}
+```
+
+---
+
 # `Result`
 
 - Forces handling potential exceptions
-- `Result<Type, Error>` can be `Ok(Type)` or `Err(Error)`
-- `expect("error message if error")`
+- `Result<Type, ErrorType>` can be `Ok(Type)` or `Err(ErrorType)`
+- can be handled like `Option`
 - convert to `Option` with `ok()`
 
 ---
 
-# `Result` & `match`
+# Handling `Result` with `match`
 
 ```rust
 fn function_with_potential_error() -> Result<i32, &str> {
@@ -565,7 +621,7 @@ fn convert_to_fruit(line: &str) -> Result<Fruit, &str> {
 #[test]
 fn test_convert_to_fruit() {
     let fruit = convert_to_fruit("banana, 21");
-    let name = "banana".to_string();
+    let name = "banana".to_owned();
     let amount = 21;
     let expected = Ok(Fruit { name, amount });
     assert_eq!(fruit, expected);
@@ -624,8 +680,9 @@ fn sum_of_squares(input: &Vec<i32>) -> i32 {
 ```rust
 
 
- fn sum_of_squares(input: &Vec<i32>)
-                         -> i32 {
+ fn sum_of_squares(
+        input: &Vec<i32>
+ ) -> i32 {
    input.iter()
         .map(|&i| i * i)
         .sum()
@@ -638,8 +695,9 @@ fn sum_of_squares(input: &Vec<i32>) -> i32 {
 ```rust
  `use rayon::prelude::*;`
 
- fn sum_of_squares(input: &Vec<i32>)
-                         -> i32 {
+ fn sum_of_squares(
+        input: &Vec<i32>
+ ) -> i32 {
    input.`par_`iter()
         .map(|&i| i * i)
         .sum()
@@ -711,15 +769,6 @@ kiwi, 1
 ]
 ]
 
----
-
-class: center, middle
-
-# Thanks for coming!
-
-Feel free to rate or give feedback!
-
-reboumans@gmail.com
 
 ---
 
